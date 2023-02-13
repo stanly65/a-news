@@ -26,10 +26,12 @@ type Search struct {
 	Results    *api.Results
 }
 
+// IsLastPage checks if this is the last page
 func (s *Search) IsLastPage() bool {
 	return s.NextPage >= s.TotalPages
 }
 
+// CurrentPage returns the current page
 func (s *Search) CurrentPage() int {
 	if s.NextPage == 1 {
 		return s.NextPage
@@ -38,10 +40,12 @@ func (s *Search) CurrentPage() int {
 	return s.NextPage - 1
 }
 
+// PreviousPage returns the previous page
 func (s *Search) PreviousPage() int {
 	return s.CurrentPage() - 1
 }
 
+// baseHandler loads an empty template with no data
 func baseHandler(w http.ResponseWriter, _ *http.Request) {
 	buf := &bytes.Buffer{}
 	err := tpl.Execute(buf, nil)
@@ -56,6 +60,7 @@ func baseHandler(w http.ResponseWriter, _ *http.Request) {
 
 }
 
+// searchHandler processes the results and loads a data template
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	u, err := url.Parse(r.URL.String())
 	if err != nil {
@@ -122,16 +127,14 @@ func main() {
 	fs := http.FileServer(http.Dir("static"))
 
 	// create an HTTP request multiplexer
-	// matches the URL of incoming requests against
-	//a list of registered patterns
 	mux := http.NewServeMux()
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 	mux.HandleFunc("/search", searchHandler)
 	mux.HandleFunc("/", baseHandler)
 
-	fmt.Println("Server started at port 6789")
-	err = http.ListenAndServe(":6789", mux)
-	if err != nil {
-		return
+	// start http server
+	fmt.Println("Starting server on http://localhost:8080")
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		fmt.Println("Failed to start server:", err)
 	}
 }
