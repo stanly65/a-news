@@ -1,0 +1,7 @@
+### GET request
+GET http://localhost:8080
+Accept: application/json
+
+### GET request
+GET http://localhost:8080/search?q=3D
+Accept: application/json
