@@ -1,5 +1,7 @@
 package main
 
+// running http and file servers; implementing the received data into the web template
+
 import (
 	"bytes"
 	"fmt"

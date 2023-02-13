@@ -1,5 +1,6 @@
 package api
 
+// link to https://newsapi.org/ and retrieve articles by keyword
 import (
 	"encoding/json"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"time"
 )
 
+// Article struct
 type Article struct {
 	Source struct {
 		ID   interface{} `json:"id"`
