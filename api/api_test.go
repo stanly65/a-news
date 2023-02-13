@@ -26,7 +26,7 @@ func TestArticle_FormatPublishedDate(t *testing.T) {
 		fields fields
 		want   string
 	}{
-		// TODO: Add test cases.
+		// todo
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
