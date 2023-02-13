@@ -1,6 +1,5 @@
+// Package main running http and file servers; implementing the received data into the web template
 package main
-
-// running http and file servers; implementing the received data into the web template
 
 import (
 	"bytes"

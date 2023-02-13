@@ -1,6 +1,6 @@
+// Package api link to https://newsapi.org/ and retrieve articles by keyword
 package api
 
-// link to https://newsapi.org/ and retrieve articles by keyword
 import (
 	"encoding/json"
 	"fmt"
