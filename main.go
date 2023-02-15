@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-// Create new Template with base name and parsed content; panic error !=0
+// Create new Template with base name and parsed content; panic if error !=0
 var tpl = te.Must(te.ParseFiles("./templates/index.html"))
 var nc *api.Client
 
@@ -46,7 +46,7 @@ func (s *Search) PreviousPage() int {
 	return s.CurrentPage() - 1
 }
 
-// baseHandler loads an empty template with no data
+// baseHandler - response loads an empty template with no data
 func baseHandler(w http.ResponseWriter, _ *http.Request) {
 	buf := &bytes.Buffer{}
 	err := tpl.Execute(buf, nil)
@@ -68,7 +68,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	// q represents the user’s query, and page is used to page through the results
 	params := u.Query()
 	searchQuery := params.Get("q")
 	page := params.Get("page")
@@ -81,7 +81,9 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// fmt.Printf("%+v", results) // test display of the result in the console
 
+	// Rendering the results
 	nextPage, err := strconv.Atoi(page)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -97,7 +99,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	if ok := !search.IsLastPage(); ok {
 		search.NextPage++
 	}
-
+	// execute the template, passing the search struct as the data object
 	buf := &bytes.Buffer{}
 	err = tpl.Execute(buf, search)
 	if err != nil {
@@ -116,9 +118,18 @@ func main() {
 		log.Println("Error loading .env file")
 	}
 
+	adr := os.Getenv("ADDRESS")
+	if adr == "" {
+		adr = "127.0.0.1"
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	apiKey := os.Getenv("NEWS_API_KEY")
 	if apiKey == "" {
-		log.Fatal("Env: apiKey must be set")
+		log.Fatal("NEWS_API_KEY must be set in .env file")
 	}
 
 	myClient := &http.Client{Timeout: 10 * time.Second}
@@ -134,8 +145,9 @@ func main() {
 	mux.HandleFunc("/", baseHandler)
 
 	// start http server
-	fmt.Println("Starting server on http://localhost:8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
-		fmt.Println("Failed to start server:", err)
+	fmt.Printf("Starting server on http://%v:%v", adr, port)
+	if err := http.ListenAndServe(":"+port, mux); err != nil {
+		fmt.Println("Failed to start server:")
+		log.Fatal(err)
 	}
 }
